@@ -123,3 +123,67 @@ body {
     align-items: center;
     gap: 10px;  
 }
+
+.auth-box {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #e1e8ed;
+    border-radius: 15px;
+    background-color: white;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #536471;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #cfd9de;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.auth-button {
+    background-color: #1da1f2;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.auth-button:hover {
+    background-color: #1a91da;
+}
+
+.auth-redirect {
+    text-align: center;
+    margin-top: 20px;
+    color: #536471;
+}
+
+.auth-redirect a {
+    color: #1da1f2;
+    text-decoration: none;
+}
+
+.auth-redirect a:hover {
+    text-decoration: underline;
+}
