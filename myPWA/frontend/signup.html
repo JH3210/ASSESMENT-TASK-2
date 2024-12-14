@@ -6,7 +6,6 @@
     <title>Sign Up - Sharely</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.cdnfonts.com/css/chirp-2" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
@@ -15,7 +14,6 @@
                 <a href="index.html" class="logo-link">
                     <img src="logo.png" alt="Website Logo" class="logo">
                 </a>
-                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
             </section>
             <section class="nav-right">
                 <a href="login.html" class="nav-link">Login</a>
@@ -23,17 +21,14 @@
             </section>
         </section>
     </nav>
+
     <main class="container">
         <section class="auth-box">
             <h2>Create your account</h2>
-            <form class="auth-form">
+            <form id="signupForm" class="auth-form">
                 <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -43,10 +38,71 @@
                     <label for="confirm-password">Confirm Password</label>
                     <input type="password" id="confirm-password" name="confirm-password" required>
                 </div>
+                <div id="signupMessage" class="error-message"></div>
                 <button type="submit" class="auth-button">Sign Up</button>
             </form>
             <p class="auth-redirect">Already have an account? <a href="login.html">Login</a></p>
         </section>
     </main>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const signupMessage = document.getElementById('signupMessage');
+
+            // Clear previous messages
+            signupMessage.textContent = '';
+            signupMessage.style.display = 'none';
+
+            // Validate inputs
+            if (!username || !password) {
+                signupMessage.textContent = 'Username and password are required';
+                signupMessage.style.display = 'block';
+                return;
+            }
+
+            // Password validation
+            if (password !== confirmPassword) {
+                signupMessage.textContent = "Passwords don't match";
+                signupMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3001/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    signupMessage.textContent = 'Signup successful! Redirecting...';
+                    signupMessage.style.color = 'green';
+                    signupMessage.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    // Log the full error for debugging
+                    console.error('Signup error:', data);
+                    
+                    // Display the specific error message
+                    signupMessage.textContent = data.error || 'Signup failed';
+                    signupMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                signupMessage.textContent = 'An error occurred during signup';
+                signupMessage.style.display = 'block';
+            }
+        });
+    </script>
 </body>
-</html> 
+</html>

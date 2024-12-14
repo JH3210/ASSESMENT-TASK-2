@@ -1,0 +1,22 @@
+
+CREATE TABLE IF NOT EXISTS tweets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+   SELECT * FROM tweets ORDER BY created_at DESC;
+
+
+   CREATE TABLE IF NOT EXISTS tweets (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       content TEXT NOT NULL,
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+
+
+SELECT * FROM tweets WHERE id = 1;  
+
+   SELECT * FROM tweets;

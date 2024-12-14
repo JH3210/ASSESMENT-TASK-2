@@ -187,3 +187,45 @@ body {
 .auth-redirect a:hover {
     text-decoration: underline;
 }
+
+.tweet-feed {
+    margin-top: 20px;
+}
+
+.tweet {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.tweet-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.tweet-author {
+    font-weight: bold;
+    color: #14171a;
+}
+
+.tweet-time {
+    color: #657786;
+    font-size: 0.9em;
+}
+
+.tweet-content {
+    color: #14171a;
+    line-height: 1.4;
+}
+
+.error-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #ffebee;
+    color: #c62828;
+    text-align: center;
+}

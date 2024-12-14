@@ -3,31 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sharely</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Twitter App</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.cdnfonts.com/css/chirp-2" rel="stylesheet">
+    <style>
+        .logout-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <section class="nav-content">
-            <section class="nav-left">
-                <a href="#" class="logo-link">
-                    <img src="logo.png" alt="Website Logo" class="logo">
-                </a>
-                <a href="#" class="nav-link"><i class="fas fa-home"></i> Home</a>
-            </section>
-            <section class="nav-right">
-                <a href="login.html" class="nav-link">Login</a>
-                <a href="signup.html" class="nav-button">Sign up</a>
-            </section>
-        </section>
-    </nav>
+    <div class="logout-container">
+        <button onclick="logout()" class="logout-button">Logout</button>
+    </div>
     <main class="container">
+        <h1>Welcome, <span id="welcomeUser"></span></h1>
+        
         <section class="tweet-box">
-            <textarea class="tweet-input" placeholder="What's happening?"></textarea>
+            <textarea class="tweet-input" placeholder="What's happening?" required></textarea>
             <button class="tweet-button">Tweet</button>
         </section>
+        
+        <div class="filter-options">
+            <select id="tweetFilter" onchange="filterTweets()">
+                <option value="all">All Tweets</option>
+                <option value="mine">My Tweets</option>
+            </select>
+        </div>
+        
+        <section class="tweet-feed">
+            <!-- Tweets will be dynamically added here -->
+        </section>
     </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Authentication and Page Load Check
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('welcomeUser').textContent = username;
+            loadTweets();
+        });
+    </script>
 </body>
 </html>
