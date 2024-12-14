@@ -153,30 +153,46 @@ app.put('/api/tweets/:id', (req, res) => {
         return res.status(400).json({ error: 'Content and username are required' });
     }
 
-    dbTweets.run(
-        'UPDATE tweets SET content = ? WHERE id = ? AND username = ?',
-        [content, id, username],
-        function(err) {
-            if (err) {
-                return res.status(500).json({ error: 'Error updating tweet' });
-            }
-            if (this.changes === 0) {
-                return res.status(404).json({ error: 'Tweet not found or unauthorized' });
-            }
-            // Return the updated tweet data
-            dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, tweet) => {
-                if (err) {
-                    return res.status(500).json({ error: 'Error retrieving updated tweet' });
-                }
-                res.status(200).json(tweet);
-            });
+    // First verify the tweet exists and belongs to the user
+    dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, tweet) => {
+        if (err) {
+            console.error('Tweet lookup error:', err);
+            return res.status(500).json({ error: 'Database error' });
         }
-    );
+        
+        if (!tweet) {
+            return res.status(404).json({ error: 'Tweet not found' });
+        }
+
+        if (tweet.username !== username) {
+            return res.status(403).json({ error: 'Unauthorized: This tweet belongs to another user' });
+        }
+
+        // If we get here, the tweet exists and belongs to the user
+        dbTweets.run(
+            'UPDATE tweets SET content = ? WHERE id = ?',
+            [content, id],
+            function(err) {
+                if (err) {
+                    console.error('Tweet update error:', err);
+                    return res.status(500).json({ error: 'Error updating tweet' });
+                }
+
+                // Return the updated tweet
+                dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, updatedTweet) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Error retrieving updated tweet' });
+                    }
+                    res.status(200).json(updatedTweet);
+                });
+            }
+        );
+    });
 });
 
 // Route to serve index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/welcome.html'));
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // Start the server
