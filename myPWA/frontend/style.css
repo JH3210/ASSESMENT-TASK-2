@@ -229,3 +229,36 @@ body {
     color: #c62828;
     text-align: center;
 }
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button.like-button {
+    background-color: #008CBA; 
+    color: white;
+}
+
+button.like-button:hover {
+    background-color: #007bb5;
+    transform: scale(1.05);
+}
+
+
+.tweet-actions {
+    margin-top: 10px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button + button {
+    margin-left: 8px;
+}

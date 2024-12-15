@@ -6,10 +6,9 @@ const urlsToCache = [
     '/myPWA/frontend/welcome.html',
     '/myPWA/frontend/style.css',
     '/myPWA/frontend/app.js',
-    // Add additional assets if needed
+
 ];
 
-// Install the service worker
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -20,17 +19,16 @@ self.addEventListener('install', event => {
     );
 });
 
-// Fetch requests
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request).then(response => {
-            // Return the cached response if found, otherwise fetch from network
+
             return response || fetch(event.request).catch(() => caches.match('/myPWA/frontend/index.html'));
         })
     );
 });
 
-// Activate the service worker
+
 self.addEventListener('activate', event => {
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(

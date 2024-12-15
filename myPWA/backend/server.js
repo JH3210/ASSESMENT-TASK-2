@@ -47,7 +47,6 @@ const dbTweets = new sqlite3.Database(dbPathTweets, (err) => {
     }
 });
 
-// User Signup Endpoint
 app.post('/api/signup', (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -62,7 +61,6 @@ app.post('/api/signup', (req, res) => {
         }
     );
 });
-
 // User Login Endpoint
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
