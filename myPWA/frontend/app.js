@@ -1,9 +1,8 @@
-let isEditMode = false; // Track whether we're in edit mode
-let editId = null; // Store the ID of the tweet being edited
-let allTweets = []; // Store all tweets
+let isEditMode = false; 
+let editId = null; 
+let allTweets = []; 
 let currentFilter = 'all';
 
-// Function to load tweets from the backend
 async function loadTweets() {
     try {
         const response = await fetch('http://localhost:3001/api/tweets');
@@ -11,7 +10,7 @@ async function loadTweets() {
             throw new Error('Failed to fetch tweets');
         }
         allTweets = await response.json(); // Store all tweets
-        displayTweets(); // Separate display logic
+        displayTweets();  
     } catch (error) {
         console.error('Error loading tweets:', error);
         alert('Failed to load tweets');
@@ -111,27 +110,29 @@ function filterTweets() {
     displayTweets();
 }
 
-// Add new function to handle displaying tweets
+
 function displayTweets() {
     const currentUsername = localStorage.getItem('username');
     const tweetFeed = document.querySelector('.tweet-feed');
     tweetFeed.innerHTML = ''; // Clear existing tweets
-    
-    // Filter tweets based on current selection
-    const tweetsToShow = currentFilter === 'mine' 
+
+    const tweetsToShow = currentFilter === 'mine'
         ? allTweets.filter(tweet => tweet.username === currentUsername)
         : allTweets;
-    
+
     tweetsToShow.forEach(tweet => {
         const tweetElement = document.createElement('div');
         tweetElement.className = 'tweet';
-        
-        // Only show edit/delete buttons if the tweet belongs to current user
+
+        const likeButton = `
+            <button onclick="likeTweet(${tweet.id})" class="like-button">Like (${tweet.likes || 0})</button>
+        `;
+
         const actionButtons = tweet.username === currentUsername ? `
             <button onclick="editTweet(${tweet.id})">Edit</button>
             <button onclick="deleteTweet(${tweet.id})">Delete</button>
         ` : '';
-        
+
         tweetElement.innerHTML = `
             <div class="tweet-header">
                 <span class="tweet-author">${tweet.username}</span>
@@ -142,11 +143,46 @@ function displayTweets() {
                 })}</span>
             </div>
             <div class="tweet-content">${tweet.content}</div>
-            ${actionButtons}
+            <div class="tweet-actions">
+                ${likeButton}
+                ${actionButtons}
+            </div>
         `;
         tweetFeed.appendChild(tweetElement);
     });
 }
+
+
+// Function to like a tweet
+async function likeTweet(tweetId) {
+    const username = localStorage.getItem('username');
+    if (!username) {
+        alert('You must be logged in to like tweets.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3001/api/tweets/${tweetId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }),
+        });
+
+        if (response.ok) {
+            loadTweets(); // Reload tweets to update like count
+        } else {
+            const errorData = await response.json();
+            alert(errorData.error || 'Error liking tweet');
+        }
+    } catch (error) {
+        console.error('Error liking tweet:', error);
+        alert('Error liking tweet');
+    }
+}
+
+
 
 // Add this new function
 function logout() {
@@ -171,3 +207,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.tweet-button').addEventListener('click', addTweet);
     document.getElementById('tweetFilter').addEventListener('change', filterTweets);
 });
+

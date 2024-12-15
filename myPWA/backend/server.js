@@ -199,3 +199,42 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+// Like a tweet
+app.post('/api/tweets/:id/like', (req, res) => {
+    const { id } = req.params;
+    const { username } = req.body;
+
+    if (!username) {
+        return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Check if the user has already liked the tweet
+    dbTweets.get('SELECT * FROM likes WHERE tweet_id = ? AND username = ?', [id, username], (err, like) => {
+        if (err) {
+            console.error('Error checking likes:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (like) {
+            return res.status(400).json({ error: 'You have already liked this tweet' });
+        }
+
+        // Increment the like count and add to likes table
+        dbTweets.run('INSERT INTO likes (tweet_id, username) VALUES (?, ?)', [id, username], (err) => {
+            if (err) {
+                console.error('Error adding like:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            dbTweets.run('UPDATE tweets SET likes = likes + 1 WHERE id = ?', [id], (err) => {
+                if (err) {
+                    console.error('Error updating likes:', err);
+                    return res.status(500).json({ error: 'Error updating tweet likes' });
+                }
+
+                res.status(200).json({ message: 'Tweet liked successfully' });
+            });
+        });
+    });
+});
