@@ -9,15 +9,14 @@ async function loadTweets() {
         if (!response.ok) {
             throw new Error('Failed to fetch tweets');
         }
-        allTweets = await response.json(); // Store all tweets
-        displayTweets();  
+        allTweets = await response.json(); 
+        filterTweets(); 
     } catch (error) {
         console.error('Error loading tweets:', error);
         alert('Failed to load tweets');
     }
 }
 
-// Function to handle tweet submission
 async function addTweet(event) {
     event.preventDefault();
     const content = document.querySelector('.tweet-input').value.trim();
@@ -46,33 +45,30 @@ async function addTweet(event) {
             throw new Error(data.error || 'Failed to process request');
         }
 
-        document.querySelector('.tweet-input').value = ''; // Clear input
-        loadTweets(); // Reload tweets
-        switchToAddMode(); // Reset to add mode
+        document.querySelector('.tweet-input').value = ''; 
+        await loadTweets(); 
+        switchToAddMode(); 
     } catch (error) {
         console.error('Error:', error);
         alert(error.message || 'Error processing request');
     }
 }
 
-// Function to switch to "Add" mode
 function switchToAddMode() {
     isEditMode = false;
     editId = null;
     document.querySelector('.tweet-button').textContent = 'Tweet';
-    document.querySelector('.tweet-input').value = ''; // Clear the input
+    document.querySelector('.tweet-input').value = ''; 
 }
 
-// Function to edit a tweet
 function editTweet(id) {
-    // Fetches the current tweet data
     fetch(`http://localhost:3001/api/tweets/${id}`)
         .then(response => response.json())
         .then(data => {
-            // Populates form with existing data
+  
             document.querySelector('.tweet-input').value = data.content;
 
-            // Switches to edit mode
+
             isEditMode = true;
             editId = id;
             document.querySelector('.tweet-button').textContent = 'Update Tweet';
@@ -83,7 +79,6 @@ function editTweet(id) {
         });
 }
 
-// Function to delete a tweet
 async function deleteTweet(id) {
     if (confirm('Are you sure you want to delete this tweet?')) {
         try {
@@ -93,7 +88,7 @@ async function deleteTweet(id) {
 
             if (response.ok) {
                 console.log('Tweet deleted');
-                loadTweets(); // Reload the list of tweets
+                loadTweets(); 
             } else {
                 throw new Error('Error deleting tweet');
             }
@@ -104,7 +99,6 @@ async function deleteTweet(id) {
     }
 }
 
-// Add new function to handle filtering
 function filterTweets() {
     currentFilter = document.getElementById('tweetFilter').value;
     displayTweets();
@@ -114,9 +108,9 @@ function filterTweets() {
 function displayTweets() {
     const currentUsername = localStorage.getItem('username');
     const tweetFeed = document.querySelector('.tweet-feed');
-    tweetFeed.innerHTML = ''; // Clear existing tweets
+    tweetFeed.innerHTML = ''; 
 
-    const tweetsToShow = currentFilter === 'mine'
+    const tweetsToShow = currentFilter === 'mine' 
         ? allTweets.filter(tweet => tweet.username === currentUsername)
         : allTweets;
 
@@ -152,8 +146,6 @@ function displayTweets() {
     });
 }
 
-
-// Function to like a tweet
 async function likeTweet(tweetId) {
     const username = localStorage.getItem('username');
     if (!username) {
@@ -171,7 +163,7 @@ async function likeTweet(tweetId) {
         });
 
         if (response.ok) {
-            loadTweets(); // Reload tweets to update like count
+            await loadTweets(); 
         } else {
             const errorData = await response.json();
             alert(errorData.error || 'Error liking tweet');
@@ -183,14 +175,10 @@ async function likeTweet(tweetId) {
 }
 
 
-
-// Add this new function
 function logout() {
-    // Clear the stored username
+
     localStorage.removeItem('username');
-    
-    // Redirect to login page
-    window.location.href = 'login.html';
+    window.location.href = 'welcome.html';
 }
 
 // Event listeners
@@ -199,9 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!username) {
         window.location.href = 'login.html';
     } else {
-        loadTweets(); // Load tweets when the page loads
-        // Update welcome message with username
+        loadTweets(); 
+    
         document.getElementById('welcomeUser').textContent = username;
+        document.getElementById('tweetFilter').value = currentFilter;
     }
 
     document.querySelector('.tweet-button').addEventListener('click', addTweet);

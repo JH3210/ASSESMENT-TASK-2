@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="../manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/myPWA/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 
 </head>
 <body>
@@ -55,18 +68,15 @@
             const confirmPassword = document.getElementById('confirm-password').value;
             const signupMessage = document.getElementById('signupMessage');
 
-            // Clear previous messages
             signupMessage.textContent = '';
             signupMessage.style.display = 'none';
 
-            // Validate inputs
             if (!username || !password) {
                 signupMessage.textContent = 'Username and password are required';
                 signupMessage.style.display = 'block';
                 return;
             }
 
-            // Password validation
             if (password !== confirmPassword) {
                 signupMessage.textContent = "Passwords don't match";
                 signupMessage.style.display = 'block';
@@ -85,17 +95,16 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    signupMessage.textContent = 'Signup successful! Redirecting...';
-                    signupMessage.style.color = 'green';
-                    signupMessage.style.display = 'block';
-                    setTimeout(() => {
+               
+                    if (confirm('Signed up successfully! Please login now.')) {
                         window.location.href = 'login.html';
-                    }, 1500);
+                    } else {
+                        window.location.href = 'login.html'; 
+                    }
                 } else {
-                    // Log the full error for debugging
                     console.error('Signup error:', data);
                     
-                    // Display the specific error message
+                    
                     signupMessage.textContent = data.error || 'Signup failed';
                     signupMessage.style.display = 'block';
                 }
