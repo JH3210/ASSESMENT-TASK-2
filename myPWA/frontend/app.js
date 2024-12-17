@@ -71,7 +71,7 @@ function editTweet(id) {
 
             isEditMode = true;
             editId = id;
-            document.querySelector('.tweet-button').textContent = 'Update Tweet';
+            document.querySelector('.tweet-button').textContent = 'Update Post';
         })
         .catch(error => {
             console.error('Error:', error);
@@ -108,7 +108,7 @@ function filterTweets() {
 function displayTweets() {
     const currentUsername = localStorage.getItem('username');
     const tweetFeed = document.querySelector('.tweet-feed');
-    tweetFeed.innerHTML = '';
+    tweetFeed.innerHTML = ''; 
 
     const tweetsToShow = currentFilter === 'mine' 
         ? allTweets.filter(tweet => tweet.username === currentUsername)
@@ -127,10 +127,14 @@ function displayTweets() {
             <button onclick="deleteTweet(${tweet.id})">Delete</button>
         ` : '';
 
-
         tweetElement.innerHTML = `
             <div class="tweet-header">
                 <span class="tweet-author">${tweet.username}</span>
+                <span class="tweet-time">${new Date(tweet.created_at).toLocaleString('en-AU', {
+                    timeZone: 'Australia/Sydney',
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                })}</span>
             </div>
             <div class="tweet-content">${tweet.content}</div>
             <div class="tweet-actions">
@@ -192,4 +196,3 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.tweet-button').addEventListener('click', addTweet);
     document.getElementById('tweetFilter').addEventListener('change', filterTweets);
 });
-

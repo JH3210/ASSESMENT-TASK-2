@@ -7,7 +7,6 @@ const urlsToCache = [
     '/myPWA/frontend/welcome-style.css',
     '/myPWA/frontend/background.png',
     '/myPWA/frontend/logo.png',
-    '/myPWA/frontend/style.css',
 ];
 
 
