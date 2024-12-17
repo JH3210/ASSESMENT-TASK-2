@@ -1,7 +1,7 @@
 {
     "name": "Sharely",
     "short_name": "Sharely",
-    "start_url": "frontend/welcome.html",
+    "start_url": "frontend/index.html",
     "display": "standalone",
     "background_color": "#1da1f2",
     "theme_color": "#1da1f2",

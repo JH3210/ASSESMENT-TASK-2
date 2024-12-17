@@ -7,11 +7,9 @@ const bcrypt = require('bcrypt');
 const app = express();
 const port = 3001;
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from frontend directory
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Set up SQLite database for users
@@ -32,7 +30,6 @@ const dbUsers = new sqlite3.Database(dbPathUsers, (err) => {
     }
 });
 
-// Create and connect to tweets database
 const dbTweets = new sqlite3.Database(dbPathTweets, (err) => {
     if (err) {
         console.error('Error opening tweets database:', err);
@@ -61,7 +58,6 @@ app.post('/api/signup', (req, res) => {
         }
     );
 });
-// User Login Endpoint
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -78,7 +74,6 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Create a new tweet Endpoint
 app.post('/api/tweets', (req, res) => {
     const { username, content } = req.body;
 
@@ -114,7 +109,6 @@ app.get('/api/tweets', (req, res) => {
     });
 });
 
-// Get a single tweet by ID
 app.get('/api/tweets/:id', (req, res) => {
     const { id } = req.params;
     dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, row) => {
@@ -128,7 +122,6 @@ app.get('/api/tweets/:id', (req, res) => {
     });
 });
 
-// Delete a tweet
 app.delete('/api/tweets/:id', (req, res) => {
     const { id } = req.params;
     dbTweets.run(`DELETE FROM tweets WHERE id = ?`, id, function(err) {
@@ -142,7 +135,6 @@ app.delete('/api/tweets/:id', (req, res) => {
     });
 });
 
-// Update tweet endpoint
 app.put('/api/tweets/:id', (req, res) => {
     const { id } = req.params;
     const { content, username } = req.body;
@@ -166,7 +158,7 @@ app.put('/api/tweets/:id', (req, res) => {
             return res.status(403).json({ error: 'Unauthorized: This tweet belongs to another user' });
         }
 
-        // If we get here, the tweet exists and belongs to the user
+
         dbTweets.run(
             'UPDATE tweets SET content = ? WHERE id = ?',
             [content, id],
@@ -176,7 +168,7 @@ app.put('/api/tweets/:id', (req, res) => {
                     return res.status(500).json({ error: 'Error updating tweet' });
                 }
 
-                // Return the updated tweet
+                
                 dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, updatedTweet) => {
                     if (err) {
                         return res.status(500).json({ error: 'Error retrieving updated tweet' });
@@ -188,7 +180,7 @@ app.put('/api/tweets/:id', (req, res) => {
     });
 });
 
-// Route to serve index.html
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });

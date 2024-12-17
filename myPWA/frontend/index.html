@@ -6,6 +6,7 @@
     <title>Sharely</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="../manifest.json">
+    
 
     <style>
         .logout-container {
@@ -14,20 +15,8 @@
             right: 20px;
         }
     </style>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/myPWA/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
 </head>
+
 <body>
     
     <div class="logout-container">
@@ -42,7 +31,8 @@
         </section>
         
         <div class="filter-options">
-            <select id="tweetFilter" onchange="filterTweets()">
+            <label for="tweetFilter" class="filter-label">Show posts:</label>
+            <select id="tweetFilter" onchange="filterTweets()" aria-label="Filter tweets">
                 <option value="all">All Posts</option>
                 <option value="mine">My Posts</option>
             </select>
@@ -67,6 +57,8 @@
             loadTweets();
         });
     </script>
+
+      
 
 
 
