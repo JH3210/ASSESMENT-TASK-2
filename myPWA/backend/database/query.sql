@@ -30,3 +30,7 @@ CREATE TABLE likes (
     UNIQUE(tweet_id, username),
     FOREIGN KEY(tweet_id) REFERENCES tweets(id)
 );
+
+
+
+PRAGMA foreign_keys = OFF

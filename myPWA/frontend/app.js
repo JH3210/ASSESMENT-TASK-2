@@ -7,13 +7,13 @@ async function loadTweets() {
     try {
         const response = await fetch('http://localhost:3001/api/tweets');
         if (!response.ok) {
-            throw new Error('Failed to fetch tweets');
+            throw new Error('Failed to fetch posts');
         }
         allTweets = await response.json(); 
         filterTweets(); 
     } catch (error) {
-        console.error('Error loading tweets:', error);
-        alert('Failed to load tweets');
+        console.error('Error loading posts:', error);
+        alert('Failed to load posts');
     }
 }
 
@@ -23,7 +23,7 @@ async function addTweet(event) {
     const username = localStorage.getItem('username');
 
     if (!content) {
-        alert('Please enter a tweet');
+        alert('Please enter a Post');
         return;
     }
 
@@ -75,12 +75,12 @@ function editTweet(id) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error fetching tweet');
+            alert('Error fetching post');
         });
 }
 
 async function deleteTweet(id) {
-    if (confirm('Are you sure you want to delete this tweet?')) {
+    if (confirm('Are you sure you want to delete this post?')) {
         try {
             const response = await fetch(`http://localhost:3001/api/tweets/${id}`, {
                 method: 'DELETE',

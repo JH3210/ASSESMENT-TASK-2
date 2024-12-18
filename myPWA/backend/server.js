@@ -126,11 +126,11 @@ app.delete('/api/tweets/:id', (req, res) => {
     const { id } = req.params;
     dbTweets.run(`DELETE FROM tweets WHERE id = ?`, id, function(err) {
         if (err) {
-            res.status(500).send('Error deleting tweet');
+            res.status(500).send('Error deleting Post');
         } else if (this.changes === 0) {
-            res.status(404).send('Tweet not found');
+            res.status(404).send('Post not found');
         } else {
-            res.status(200).send('Tweet deleted successfully');
+            res.status(200).send('Post deleted successfully');
         }
     });
 });
@@ -151,11 +151,7 @@ app.put('/api/tweets/:id', (req, res) => {
         }
         
         if (!tweet) {
-            return res.status(404).json({ error: 'Tweet not found' });
-        }
-
-        if (tweet.username !== username) {
-            return res.status(403).json({ error: 'Unauthorized: This tweet belongs to another user' });
+            return res.status(404).json({ error: 'Post not found' });
         }
 
 
@@ -165,13 +161,13 @@ app.put('/api/tweets/:id', (req, res) => {
             function(err) {
                 if (err) {
                     console.error('Tweet update error:', err);
-                    return res.status(500).json({ error: 'Error updating tweet' });
+                    return res.status(500).json({ error: 'Error updating post' });
                 }
 
                 
                 dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, updatedTweet) => {
                     if (err) {
-                        return res.status(500).json({ error: 'Error retrieving updated tweet' });
+                        return res.status(500).json({ error: 'Error retrieving updated post' });
                     }
                     res.status(200).json(updatedTweet);
                 });

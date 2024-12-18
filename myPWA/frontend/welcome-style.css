@@ -4,7 +4,6 @@ body, html {
     height: 100%;
     font-family: Arial, sans-serif;
 }
-
 .welcome-container {
     height: 100vh;
     background-image: url('background.png');
@@ -15,7 +14,6 @@ body, html {
     align-items: center;
     position: relative;
 }
-
 .welcome-container::before {
     content: '';
     position: absolute;
