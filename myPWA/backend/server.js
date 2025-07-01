@@ -46,6 +46,13 @@ const dbTweets = new sqlite3.Database(dbPathTweets, (err) => {
 
 app.post('/api/signup', (req, res) => {
     const { username, password } = req.body;
+
+    // Password validation: at least 8 characters, 1 uppercase letter, 1 symbol
+    const passwordRequirements = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRequirements.test(password)) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters long, contain at least one uppercase letter, and one symbol.' });
+    }
+
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     dbUsers.run(`INSERT INTO users (username, password) VALUES (?, ?)`, 

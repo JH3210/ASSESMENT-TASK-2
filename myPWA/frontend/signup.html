@@ -35,6 +35,11 @@
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
+                    <ul id="password-checklist" style="list-style: none; padding-left: 0; margin-top: 8px;">
+                        <li id="check-length" style="color: #b0b0b0;">&#10007; At least 8 characters</li>
+                        <li id="check-uppercase" style="color: #b0b0b0;">&#10007; At least 1 uppercase letter</li>
+                        <li id="check-symbol" style="color: #b0b0b0;">&#10007; At least 1 symbol</li>
+                    </ul>
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">Confirm Password</label>
@@ -99,6 +104,40 @@
                 console.error('Signup error:', error);
                 signupMessage.textContent = 'An error occurred during signup';
                 signupMessage.style.display = 'block';
+            }
+        });
+
+        // Password requirements checklist
+        const passwordInput = document.getElementById('password');
+        const checkLength = document.getElementById('check-length');
+        const checkUppercase = document.getElementById('check-uppercase');
+        const checkSymbol = document.getElementById('check-symbol');
+
+        passwordInput.addEventListener('input', function() {
+            const value = passwordInput.value;
+            // Check length
+            if (value.length >= 8) {
+                checkLength.style.color = 'green';
+                checkLength.innerHTML = '&#10003; At least 8 characters';
+            } else {
+                checkLength.style.color = '#b0b0b0';
+                checkLength.innerHTML = '&#10007; At least 8 characters';
+            }
+            // Check uppercase
+            if (/[A-Z]/.test(value)) {
+                checkUppercase.style.color = 'green';
+                checkUppercase.innerHTML = '&#10003; At least 1 uppercase letter';
+            } else {
+                checkUppercase.style.color = '#b0b0b0';
+                checkUppercase.innerHTML = '&#10007; At least 1 uppercase letter';
+            }
+            // Check symbol
+            if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
+                checkSymbol.style.color = 'green';
+                checkSymbol.innerHTML = '&#10003; At least 1 symbol';
+            } else {
+                checkSymbol.style.color = '#b0b0b0';
+                checkSymbol.innerHTML = '&#10007; At least 1 symbol';
             }
         });
     </script>
