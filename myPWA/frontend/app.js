@@ -107,10 +107,14 @@ function filterTweets() {
 
 function displayTweets() {
     const currentUsername = localStorage.getItem('username');
+    const currentRole = localStorage.getItem('role');
     const tweetFeed = document.querySelector('.tweet-feed');
-    tweetFeed.innerHTML = ''; 
+    tweetFeed.innerHTML = '';
 
-    const tweetsToShow = currentFilter === 'mine' 
+    // Only treat as admin if username is 'admin' and role is 'admin'
+    const isAdmin = currentRole === 'admin' && currentUsername === 'admin';
+
+    const tweetsToShow = currentFilter === 'mine'
         ? allTweets.filter(tweet => tweet.username === currentUsername)
         : allTweets;
 
@@ -122,10 +126,19 @@ function displayTweets() {
             <button onclick="likeTweet(${tweet.id})" class="like-button">Like (${tweet.likes || 0})</button>
         `;
 
-        const actionButtons = tweet.username === currentUsername ? `
-            <button onclick="editTweet(${tweet.id})">Edit</button>
-            <button onclick="deleteTweet(${tweet.id})">Delete</button>
-        ` : '';
+        // Only admin can edit/delete any tweet, regular users only their own
+        let actionButtons = '';
+        if (isAdmin) {
+            actionButtons = `
+                <button onclick="editTweet(${tweet.id})">Edit</button>
+                <button onclick="deleteTweet(${tweet.id})">Delete</button>
+            `;
+        } else if (tweet.username === currentUsername && currentRole === 'user') {
+            actionButtons = `
+                <button onclick="editTweet(${tweet.id})">Edit</button>
+                <button onclick="deleteTweet(${tweet.id})">Delete</button>
+            `;
+        }
 
         tweetElement.innerHTML = `
             <div class="tweet-header">
@@ -181,7 +194,7 @@ function logout() {
     window.location.href = 'welcome.html';
 }
 
-// Event listeners
+// event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const username = localStorage.getItem('username');
     if (!username) {
