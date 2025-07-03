@@ -107,6 +107,7 @@
             }
         });
 
+        // Password requirements checklist
         const passwordInput = document.getElementById('password');
         const checkLength = document.getElementById('check-length');
         const checkUppercase = document.getElementById('check-uppercase');
@@ -114,7 +115,7 @@
 
         passwordInput.addEventListener('input', function() {
             const value = passwordInput.value;
-            // check length
+            // Check length
             if (value.length >= 8) {
                 checkLength.style.color = 'green';
                 checkLength.innerHTML = '&#10003; At least 8 characters';
@@ -122,7 +123,7 @@
                 checkLength.style.color = '#b0b0b0';
                 checkLength.innerHTML = '&#10007; At least 8 characters';
             }
-            // check uppercase
+            // Check uppercase
             if (/[A-Z]/.test(value)) {
                 checkUppercase.style.color = 'green';
                 checkUppercase.innerHTML = '&#10003; At least 1 uppercase letter';
@@ -130,7 +131,7 @@
                 checkUppercase.style.color = '#b0b0b0';
                 checkUppercase.innerHTML = '&#10007; At least 1 uppercase letter';
             }
-            // check symbol
+            // Check symbol
             if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
                 checkSymbol.style.color = 'green';
                 checkSymbol.innerHTML = '&#10003; At least 1 symbol';

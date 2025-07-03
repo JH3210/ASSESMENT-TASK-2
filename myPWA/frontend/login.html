@@ -62,11 +62,9 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // store username and role in localStorage
+                    // Store username in localStorage
                     localStorage.setItem('username', username);
-                    if (data.role) {
-                        localStorage.setItem('role', data.role);
-                    }
+                    
                     loginMessage.textContent = 'Login successful! Redirecting...';
                     loginMessage.style.color = 'green';
                     setTimeout(() => {

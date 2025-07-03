@@ -25,8 +25,7 @@ const dbUsers = new sqlite3.Database(dbPathUsers, (err) => {
         dbUsers.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
-            password TEXT,
-            role TEXT DEFAULT 'user'
+            password TEXT
         )`);
     }
 });
@@ -56,18 +55,13 @@ app.post('/api/signup', (req, res) => {
 
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    // Only the username 'admin' with password 'admin123' gets admin role, all others are user
-    let role = 'user';
-    if (username === 'admin' && password === '$2b$10$W50Ctp9OoKu0A36f47tcu.8Ku27kg6l.Glam63wYDc9SpplN7eyGC') {
-        role = 'admin';
-    }
-    dbUsers.run(`INSERT INTO users (username, password, role) VALUES (?, ?, ?)`, 
-        [username, hashedPassword, role], 
+    dbUsers.run(`INSERT INTO users (username, password) VALUES (?, ?)`, 
+        [username, hashedPassword], 
         function(err) {
             if (err) {
                 return res.status(400).json({ error: 'Username already exists' });
             }
-            res.status(201).json({ id: this.lastID, username, role });
+            res.status(201).json({ id: this.lastID, username });
         }
     );
 });
@@ -80,7 +74,7 @@ app.post('/api/login', (req, res) => {
         }
 
         if (bcrypt.compareSync(password, user.password)) {
-            res.status(200).json({ message: `Login successful`, username, role: user.role });
+            res.status(200).json({ message: `Login successful`, username });
         } else {
             res.status(401).json({ error: 'Invalid username or password' });
         }
@@ -137,34 +131,14 @@ app.get('/api/tweets/:id', (req, res) => {
 
 app.delete('/api/tweets/:id', (req, res) => {
     const { id } = req.params;
-    const { username } = req.body;
-    if (!username) {
-        return res.status(400).json({ error: 'Username is required' });
-    }
-    dbUsers.get('SELECT username, password FROM users WHERE username = ?', [username], (err, user) => {
-        if (err || !user) {
-            return res.status(403).json({ error: 'User not found' });
+    dbTweets.run(`DELETE FROM tweets WHERE id = ?`, id, function(err) {
+        if (err) {
+            res.status(500).send('Error deleting Post');
+        } else if (this.changes === 0) {
+            res.status(404).send('Post not found');
+        } else {
+            res.status(200).send('Post deleted successfully');
         }
-        dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, tweet) => {
-            if (err || !tweet) {
-                return res.status(404).json({ error: 'Post not found' });
-            }
-            // Only allow if admin (username: admin, password: admin123) or tweet owner
-            const isAdmin = user.username === 'admin' && bcrypt.compareSync('admin123', user.password);
-            if (isAdmin || tweet.username === username) {
-                dbTweets.run(`DELETE FROM tweets WHERE id = ?`, id, function(err) {
-                    if (err) {
-                        res.status(500).send('Error deleting Post');
-                    } else if (this.changes === 0) {
-                        res.status(404).send('Post not found');
-                    } else {
-                        res.status(200).send('Post deleted successfully');
-                    }
-                });
-            } else {
-                res.status(403).json({ error: 'Not authorized to delete this post' });
-            }
-        });
     });
 });
 
@@ -176,41 +150,36 @@ app.put('/api/tweets/:id', (req, res) => {
         return res.status(400).json({ error: 'Content and username are required' });
     }
 
-    dbUsers.get('SELECT username, password FROM users WHERE username = ?', [username], (err, user) => {
-        if (err || !user) {
-            return res.status(403).json({ error: 'User not found' });
+    // verify whos tweet it is
+    dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, tweet) => {
+        if (err) {
+            console.error('Tweet lookup error:', err);
+            return res.status(500).json({ error: 'Database error' });
         }
-        dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, tweet) => {
-            if (err) {
-                console.error('Tweet lookup error:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-            if (!tweet) {
-                return res.status(404).json({ error: 'Post not found' });
-            }
-            // Only allow if admin (username: admin, password: admin123) or tweet owner
-            const isAdmin = user.username === 'admin' && bcrypt.compareSync('admin123', user.password);
-            if (isAdmin || tweet.username === username) {
-                dbTweets.run(
-                    'UPDATE tweets SET content = ? WHERE id = ?',
-                    [content, id],
-                    function(err) {
-                        if (err) {
-                            console.error('Tweet update error:', err);
-                            return res.status(500).json({ error: 'Error updating post' });
-                        }
-                        dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, updatedTweet) => {
-                            if (err) {
-                                return res.status(500).json({ error: 'Error retrieving updated post' });
-                            }
-                            res.status(200).json(updatedTweet);
-                        });
+        
+        if (!tweet) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+
+        dbTweets.run(
+            'UPDATE tweets SET content = ? WHERE id = ?',
+            [content, id],
+            function(err) {
+                if (err) {
+                    console.error('Tweet update error:', err);
+                    return res.status(500).json({ error: 'Error updating post' });
+                }
+
+                
+                dbTweets.get('SELECT * FROM tweets WHERE id = ?', [id], (err, updatedTweet) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Error retrieving updated post' });
                     }
-                );
-            } else {
-                res.status(403).json({ error: 'Not authorized to edit this post' });
+                    res.status(200).json(updatedTweet);
+                });
             }
-        });
+        );
     });
 });
 

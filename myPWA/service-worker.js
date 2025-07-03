@@ -36,6 +36,8 @@ self.addEventListener('fetch', event => {
 });
 
 
+// Activate the service worker
+
 
 // Activate event
 self.addEventListener('activate', event => {
